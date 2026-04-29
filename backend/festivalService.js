@@ -1,12 +1,12 @@
 const FIXED_FESTIVALS = [
-  { month: 1, day: 1, name: "New Year's Day", theme: "new-year", message: "Fresh start weather check" },
-  { month: 2, day: 14, name: "Valentine's Day", theme: "valentine", message: "Plan the forecast into your date" },
-  { month: 3, day: 17, name: "St. Patrick's Day", theme: "spring", message: "A green hint for the day" },
-  { month: 7, day: 4, name: "Independence Day", theme: "summer", message: "Outdoor plans need a sky check" },
-  { month: 10, day: 31, name: "Halloween", theme: "halloween", message: "A moody overlay for the night" },
-  { month: 12, day: 24, name: "Christmas Eve", theme: "winter", message: "Holiday travel weather" },
-  { month: 12, day: 25, name: "Christmas Day", theme: "winter", message: "Holiday forecast at a glance" },
-  { month: 12, day: 31, name: "New Year's Eve", theme: "new-year", message: "Countdown forecast ready" }
+  { month: 1, day: 1, name: "New Year's Day", theme: "new-year", message: "Fresh start weather check", motif: "spark" },
+  { month: 2, day: 14, name: "Valentine's Day", theme: "valentine", message: "Plan the forecast into your date", motif: "heart" },
+  { month: 3, day: 17, name: "St. Patrick's Day", theme: "spring", message: "A green hint for the day", motif: "leaf" },
+  { month: 7, day: 4, name: "Independence Day", theme: "summer", message: "Outdoor plans need a sky check", motif: "flare" },
+  { month: 10, day: 31, name: "Halloween", theme: "halloween", message: "A moody overlay for the night", motif: "moon" },
+  { month: 12, day: 24, name: "Christmas Eve", theme: "winter", message: "Holiday travel weather", motif: "snow" },
+  { month: 12, day: 25, name: "Christmas Day", theme: "winter", message: "Holiday forecast at a glance", motif: "snow" },
+  { month: 12, day: 31, name: "New Year's Eve", theme: "new-year", message: "Countdown forecast ready", motif: "spark" }
 ];
 
 function getFestivalOverlay(date = new Date(), weather = {}) {
@@ -35,6 +35,7 @@ function getSeasonalOverlay(month, weather = {}) {
       name: "Winter Mode",
       theme: "winter",
       message: "Cold-season comfort layer",
+      motif: "snow",
       headline: weather.city ? `Winter forecast for ${weather.city}` : "Winter forecast"
     };
   }
@@ -44,6 +45,7 @@ function getSeasonalOverlay(month, weather = {}) {
       name: "Spring Mode",
       theme: "spring",
       message: "Light seasonal overlay",
+      motif: "leaf",
       headline: weather.city ? `Spring forecast for ${weather.city}` : "Spring forecast"
     };
   }
@@ -53,6 +55,7 @@ function getSeasonalOverlay(month, weather = {}) {
       name: "Summer Mode",
       theme: "summer",
       message: "Heat and outdoor planning layer",
+      motif: "sun",
       headline: weather.city ? `Summer forecast for ${weather.city}` : "Summer forecast"
     };
   }
@@ -61,6 +64,7 @@ function getSeasonalOverlay(month, weather = {}) {
     name: "Autumn Mode",
     theme: "autumn",
     message: "Crisp seasonal overlay",
+    motif: "leaf",
     headline: weather.city ? `Autumn forecast for ${weather.city}` : "Autumn forecast"
   };
 }

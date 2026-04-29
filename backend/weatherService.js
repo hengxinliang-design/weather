@@ -55,6 +55,7 @@ function getWeatherByCoords(lat, lon, units = "metric") {
 
 function mapWeather(data, units) {
   const condition = data.weather && data.weather[0] ? data.weather[0] : {};
+  const localTime = new Date((data.dt + data.timezone) * 1000).toISOString().slice(11, 16);
 
   return {
     city: data.name,
@@ -68,13 +69,49 @@ function mapWeather(data, units) {
     max: Math.round(data.main.temp_max),
     humidity: data.main.humidity,
     pressure: data.main.pressure,
-    windSpeed: data.wind.speed,
+    visibility: data.visibility,
+    cloudCover: data.clouds ? data.clouds.all : 0,
+    windSpeed: data.wind ? data.wind.speed : 0,
+    windDirection: data.wind ? data.wind.deg : undefined,
     condition: condition.main || "Weather",
     description: condition.description || "",
     icon: condition.icon ? `https://openweathermap.org/img/wn/${condition.icon}@2x.png` : "",
     sunrise: data.sys && data.sys.sunrise,
-    sunset: data.sys && data.sys.sunset
+    sunset: data.sys && data.sys.sunset,
+    timezone: data.timezone,
+    localTime,
+    visual: buildVisualModel(condition.main || "Weather", data.main.temp, data.clouds ? data.clouds.all : 0)
   };
+}
+
+function buildVisualModel(condition, temperature, cloudCover) {
+  const key = condition.toLowerCase();
+
+  if (key.includes("thunder")) {
+    return { mood: "electric", gradient: "storm", accent: "#8b5cf6", motion: "pulse" };
+  }
+
+  if (key.includes("rain") || key.includes("drizzle")) {
+    return { mood: "rain", gradient: "rain", accent: "#2563eb", motion: "fall" };
+  }
+
+  if (key.includes("snow")) {
+    return { mood: "snow", gradient: "snow", accent: "#38bdf8", motion: "float" };
+  }
+
+  if (key.includes("mist") || key.includes("fog") || key.includes("haze")) {
+    return { mood: "mist", gradient: "mist", accent: "#64748b", motion: "drift" };
+  }
+
+  if (temperature >= 30) {
+    return { mood: "heat", gradient: "heat", accent: "#ea580c", motion: "shimmer" };
+  }
+
+  if (cloudCover >= 70 || key.includes("cloud")) {
+    return { mood: "cloud", gradient: "cloud", accent: "#475569", motion: "drift" };
+  }
+
+  return { mood: "clear", gradient: "clear", accent: "#0f766e", motion: "glow" };
 }
 
 module.exports = {

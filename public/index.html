@@ -3,80 +3,93 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>H5 Weather</title>
+    <title>Weather Visual Engine</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <main class="app-shell">
-      <section class="weather-panel">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">Live OpenWeatherMap</p>
-            <h1>H5 Weather</h1>
-          </div>
-          <button class="icon-button" id="geoButton" type="button" title="Use current location" aria-label="Use current location">
-            <span aria-hidden="true">⌖</span>
-          </button>
-        </header>
-
-        <form class="search-row" id="weatherForm">
-          <label class="field">
-            <span>City</span>
-            <input id="cityInput" name="city" type="search" placeholder="Detroit" autocomplete="address-level2" />
-          </label>
-          <button type="submit">Search</button>
-        </form>
-
-        <div class="unit-toggle" role="group" aria-label="Temperature unit">
-          <button class="active" id="metricButton" type="button" data-unit="metric">°C</button>
-          <button id="imperialButton" type="button" data-unit="imperial">°F</button>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">OpenWeatherMap powered</p>
+          <h1>Weather Visual Engine</h1>
         </div>
+        <div class="actions">
+          <button class="icon-button" id="geoButton" type="button" title="Auto detect city" aria-label="Auto detect city">⌖</button>
+          <div class="unit-toggle" role="group" aria-label="Temperature unit">
+            <button class="active" id="metricButton" type="button" data-unit="metric">°C</button>
+            <button id="imperialButton" type="button" data-unit="imperial">°F</button>
+          </div>
+        </div>
+      </section>
 
-        <section class="festival hidden" id="festivalCard">
-          <p id="festivalName"></p>
-          <h2 id="festivalHeadline"></h2>
-          <span id="festivalMessage"></span>
-        </section>
+      <section class="workspace">
+        <aside class="city-panel">
+          <form class="search-row" id="weatherForm">
+            <label class="field">
+              <span>City Manager</span>
+              <input id="cityInput" name="city" type="search" placeholder="Add a city" autocomplete="address-level2" />
+            </label>
+            <button type="submit">Add</button>
+          </form>
+          <div class="city-list" id="cityList" aria-label="Saved cities"></div>
+          <p class="status" id="statusText" aria-live="polite"></p>
+        </aside>
 
-        <section class="weather-card" id="weatherCard" aria-live="polite">
+        <section class="visual-stage" id="visualStage" aria-live="polite">
           <div class="empty-state" id="emptyState">
-            <p>Search a city or use your location.</p>
+            <strong>No weather loaded</strong>
+            <span>Use auto detect or add a city to render the visual engine.</span>
           </div>
+
           <div class="weather-content hidden" id="weatherContent">
-            <div class="weather-main">
-              <div>
-                <p class="location" id="locationText"></p>
-                <p class="condition" id="conditionText"></p>
+            <section class="festival hidden" id="festivalCard">
+              <p id="festivalName"></p>
+              <h2 id="festivalHeadline"></h2>
+              <span id="festivalMessage"></span>
+            </section>
+
+            <section class="weather-card">
+              <div class="weather-main">
+                <div>
+                  <p class="location" id="locationText"></p>
+                  <p class="condition" id="conditionText"></p>
+                </div>
+                <img id="weatherIcon" alt="" />
               </div>
-              <img id="weatherIcon" alt="" />
-            </div>
-            <div class="temperature">
-              <span id="temperatureText"></span>
-              <small id="feelsLikeText"></small>
-            </div>
-            <div class="stats-grid">
-              <div>
-                <span>Humidity</span>
-                <strong id="humidityText"></strong>
+
+              <div class="temperature">
+                <span id="temperatureText"></span>
+                <small id="feelsLikeText"></small>
               </div>
-              <div>
-                <span>Wind</span>
-                <strong id="windText"></strong>
+
+              <div class="stats-grid">
+                <div>
+                  <span>Humidity</span>
+                  <strong id="humidityText"></strong>
+                </div>
+                <div>
+                  <span>Wind</span>
+                  <strong id="windText"></strong>
+                </div>
+                <div>
+                  <span>Range</span>
+                  <strong id="rangeText"></strong>
+                </div>
+                <div>
+                  <span>Clouds</span>
+                  <strong id="cloudText"></strong>
+                </div>
               </div>
-              <div>
-                <span>Range</span>
-                <strong id="rangeText"></strong>
-              </div>
-              <div>
-                <span>Pressure</span>
-                <strong id="pressureText"></strong>
-              </div>
-            </div>
-            <p class="prompt" id="promptText"></p>
+            </section>
+
+            <section class="prompt-panel">
+              <p id="promptLabel"></p>
+              <h2 id="promptSummary"></h2>
+              <p id="promptDetails"></p>
+              <code id="promptText"></code>
+            </section>
           </div>
         </section>
-
-        <p class="status" id="statusText"></p>
       </section>
     </main>
     <script src="./app.js"></script>

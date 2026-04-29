@@ -1,7 +1,7 @@
 {
-  "name": "h5-weather-app",
+  "name": "weather-visual-engine",
   "version": "1.0.0",
-  "description": "Local runnable H5 weather app with OpenWeatherMap, geolocation, unit toggle, and festival overlay.",
+  "description": "Local H5 weather visual engine with OpenWeatherMap, city management, geolocation, units, festival overlays, and generated display prompts.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
