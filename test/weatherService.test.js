@@ -9,3 +9,7 @@ test("calculates solar elevation within physical bounds", () => {
   assert.ok(elevation >= -90);
   assert.ok(elevation <= 90);
 });
+
+test("extracts local month from Open-Meteo local timestamp", () => {
+  assert.equal(weatherService.getLocalMonth("2026-10-15T08:00"), 10);
+});

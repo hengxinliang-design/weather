@@ -15,6 +15,12 @@ Lighting: ${weather.sunLighting}
 
 Weather lighting: ${weather.weatherLighting}
 
+Season: ${weather.season ? weather.season.season : "none"}
+
+Season tone: ${weather.season ? weather.season.tone : "none"}
+
+Color grade: ${weather.season ? weather.season.colorGrade : "none"}
+
 Festival overlay: ${festival || "none"}
 
 PBR materials

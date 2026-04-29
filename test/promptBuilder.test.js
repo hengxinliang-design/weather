@@ -16,6 +16,11 @@ test("builds structured weather prompt", () => {
       scene: "clear sky",
       sunLighting: "strong overhead sunlight crisp shadow",
       weatherLighting: "bright sunlight soft shadow",
+      season: {
+        season: "spring",
+        tone: "fresh green bloom",
+        colorGrade: "soft green highlights, fresh air clarity, gentle contrast"
+      },
       localTime: "14:30",
       visual: {
         mood: "clear",
@@ -37,6 +42,8 @@ test("builds structured weather prompt", () => {
   assert.match(prompt.details, /strong overhead sunlight crisp shadow/);
   assert.match(prompt.visualPrompt, /45° isometric miniature city scene/);
   assert.match(prompt.visualPrompt, /PBR materials/);
+  assert.match(prompt.visualPrompt, /Season: spring/);
+  assert.match(prompt.visualPrompt, /Season tone: fresh green bloom/);
   assert.match(prompt.visualPrompt, /Spring Mode/);
   assert.equal(prompt.displayLine, "Clear visual engine / Spring Mode / 14:30 local");
 });

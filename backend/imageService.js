@@ -19,6 +19,7 @@ function buildScenePrompt(weather, festival, prompt) {
     `Location: ${location}.`,
     `Weather: ${weather.temperature} degrees, ${weather.description || weather.condition}, humidity ${weather.humidity}%, cloud cover ${weather.cloudCover}%.`,
     `Visual mood: ${weather.visual.mood}, ${weather.visual.gradient} atmosphere, accent ${weather.visual.accent}.`,
+    weather.season ? `Season control: ${weather.season.season}, ${weather.season.prompt}, color grade ${weather.season.colorGrade}, palette ${weather.season.palette.join(", ")}.` : "",
     festivalLine,
     `UI prompt context: ${prompt.visualPrompt}`,
     "Style: polished isometric miniature city block, clean lighting, no text, no logos, no UI chrome, centered composition, app-ready background art."

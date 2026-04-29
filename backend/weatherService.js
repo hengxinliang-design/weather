@@ -1,5 +1,6 @@
 const mapWeatherVisual = require("./weatherVisualMap");
 const mapSunLighting = require("./sunLightingEngine");
+const seasonEngine = require("./seasonEngine");
 
 const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
 const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
@@ -91,6 +92,7 @@ function mapWeather(data, location, units) {
   const visibility = readHourlyValue(data.hourly, "visibility", hourlyIndex, undefined);
   const visualWeather = mapWeatherVisual(current.weathercode);
   const sunLighting = mapSunLighting(elevation);
+  const season = seasonEngine.mapSeason(getLocalMonth(current.time));
   const temperature = Math.round(current.temperature);
 
   return {
@@ -126,8 +128,17 @@ function mapWeather(data, location, units) {
     localTime: current.time ? current.time.slice(11, 16) : "",
     sunPhase: sunLighting.phase,
     sunLighting: sunLighting.lighting,
-    visual: buildVisualModel(visualWeather, sunLighting, temperature, cloudCover)
+    season,
+    visual: buildVisualModel(visualWeather, sunLighting, season, temperature, cloudCover)
   };
+}
+
+function getLocalMonth(localTime) {
+  if (!localTime || localTime.length < 7) {
+    return new Date().getMonth() + 1;
+  }
+
+  return Number(localTime.slice(5, 7));
 }
 
 function findHourlyIndex(hourly, currentTime) {
@@ -208,9 +219,15 @@ function radiansToDegrees(radians) {
   return (radians * 180) / Math.PI;
 }
 
-function buildVisualModel(visualWeather, sunLighting, temperature, cloudCover) {
+function buildVisualModel(visualWeather, sunLighting, season, temperature, cloudCover) {
   const condition = visualWeather.condition.toLowerCase();
   const scene = visualWeather.scene.toLowerCase();
+  const seasonal = {
+    season: season.season,
+    tone: season.tone,
+    palette: season.palette,
+    colorGrade: season.colorGrade
+  };
 
   if (condition.includes("thunder")) {
     return {
@@ -221,7 +238,8 @@ function buildVisualModel(visualWeather, sunLighting, temperature, cloudCover) {
       scene: visualWeather.scene,
       weatherLighting: visualWeather.visual,
       sunPhase: sunLighting.phase,
-      sunLighting: sunLighting.lighting
+      sunLighting: sunLighting.lighting,
+      ...seasonal
     };
   }
 
@@ -234,7 +252,8 @@ function buildVisualModel(visualWeather, sunLighting, temperature, cloudCover) {
       scene: visualWeather.scene,
       weatherLighting: visualWeather.visual,
       sunPhase: sunLighting.phase,
-      sunLighting: sunLighting.lighting
+      sunLighting: sunLighting.lighting,
+      ...seasonal
     };
   }
 
@@ -247,7 +266,8 @@ function buildVisualModel(visualWeather, sunLighting, temperature, cloudCover) {
       scene: visualWeather.scene,
       weatherLighting: visualWeather.visual,
       sunPhase: sunLighting.phase,
-      sunLighting: sunLighting.lighting
+      sunLighting: sunLighting.lighting,
+      ...seasonal
     };
   }
 
@@ -260,7 +280,8 @@ function buildVisualModel(visualWeather, sunLighting, temperature, cloudCover) {
       scene: visualWeather.scene,
       weatherLighting: visualWeather.visual,
       sunPhase: sunLighting.phase,
-      sunLighting: sunLighting.lighting
+      sunLighting: sunLighting.lighting,
+      ...seasonal
     };
   }
 
@@ -273,7 +294,8 @@ function buildVisualModel(visualWeather, sunLighting, temperature, cloudCover) {
       scene: visualWeather.scene,
       weatherLighting: visualWeather.visual,
       sunPhase: sunLighting.phase,
-      sunLighting: sunLighting.lighting
+      sunLighting: sunLighting.lighting,
+      ...seasonal
     };
   }
 
@@ -286,7 +308,8 @@ function buildVisualModel(visualWeather, sunLighting, temperature, cloudCover) {
       scene: visualWeather.scene,
       weatherLighting: visualWeather.visual,
       sunPhase: sunLighting.phase,
-      sunLighting: sunLighting.lighting
+      sunLighting: sunLighting.lighting,
+      ...seasonal
     };
   }
 
@@ -298,7 +321,8 @@ function buildVisualModel(visualWeather, sunLighting, temperature, cloudCover) {
     scene: visualWeather.scene,
     weatherLighting: visualWeather.visual,
     sunPhase: sunLighting.phase,
-    sunLighting: sunLighting.lighting
+    sunLighting: sunLighting.lighting,
+    ...seasonal
   };
 }
 
@@ -307,5 +331,6 @@ module.exports = {
   getWeatherByCity,
   getWeatherByCoords,
   calculateSolarElevation,
+  getLocalMonth,
   normalizeUnits
 };
