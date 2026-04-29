@@ -281,6 +281,35 @@ h1 {
   gap: 16px;
 }
 
+.scene-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f7fafb;
+}
+
+.scene-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.scene-card p {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  max-width: calc(100% - 24px);
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
 .festival {
   padding: 16px;
   border-radius: 8px;
@@ -481,6 +510,10 @@ h1 {
 
   .weather-card {
     padding: 18px;
+  }
+
+  .scene-card {
+    min-height: 210px;
   }
 
   .search-row,

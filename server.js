@@ -5,6 +5,7 @@ const path = require("path");
 const weatherService = require("./backend/weatherService");
 const festivalService = require("./backend/festivalService");
 const promptBuilder = require("./backend/promptBuilder");
+const imageService = require("./backend/imageService");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -28,8 +29,9 @@ app.get("/api/weather", async (req, res) => {
 
     const festival = festivalService.getFestivalOverlay(new Date(), weather);
     const prompt = promptBuilder.buildWeatherPrompt(weather, festival, normalizedUnits);
+    const scene = await imageService.getOrCreateScene(weather, festival, prompt);
 
-    return res.json({ weather, festival, prompt });
+    return res.json({ weather, festival, prompt, scene });
   } catch (error) {
     const status = error.statusCode || 500;
     return res.status(status).json({ error: error.message || "Weather request failed." });

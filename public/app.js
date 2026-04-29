@@ -16,6 +16,9 @@ const elements = {
   metricButton: document.querySelector("#metricButton"),
   imperialButton: document.querySelector("#imperialButton"),
   visualStage: document.querySelector("#visualStage"),
+  sceneCard: document.querySelector("#sceneCard"),
+  sceneImage: document.querySelector("#sceneImage"),
+  sceneStatus: document.querySelector("#sceneStatus"),
   festivalCard: document.querySelector("#festivalCard"),
   festivalName: document.querySelector("#festivalName"),
   festivalHeadline: document.querySelector("#festivalHeadline"),
@@ -179,7 +182,7 @@ async function loadWeather(query) {
   }
 }
 
-function renderWeather({ weather, festival, prompt }) {
+function renderWeather({ weather, festival, prompt, scene }) {
   const tempUnit = state.unit === "imperial" ? "°F" : "°C";
   const speedUnit = state.unit === "imperial" ? "mph" : "m/s";
 
@@ -202,7 +205,22 @@ function renderWeather({ weather, festival, prompt }) {
   elements.promptText.textContent = prompt.visualPrompt;
   document.documentElement.style.setProperty("--dynamic-accent", weather.visual.accent);
 
+  renderScene(scene);
   renderFestival(festival);
+}
+
+function renderScene(scene) {
+  if (!scene) {
+    elements.sceneCard.classList.add("hidden");
+    return;
+  }
+
+  elements.sceneCard.classList.remove("hidden");
+  elements.sceneImage.hidden = !scene.path;
+  elements.sceneImage.src = scene.path || "";
+  elements.sceneStatus.textContent = scene.path
+    ? `Generated isometric scene${scene.cached ? " / cached" : " / fresh"}`
+    : scene.error || "Scene image is not available.";
 }
 
 function renderFestival(festival) {
