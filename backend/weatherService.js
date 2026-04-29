@@ -129,7 +129,7 @@ function mapWeather(data, location, units) {
     sunPhase: sunLighting.phase,
     sunLighting: sunLighting.lighting,
     season,
-    visual: buildVisualModel(visualWeather, sunLighting, season, temperature, cloudCover)
+    visual: buildVisualModel(visualWeather, sunLighting, season, temperature, cloudCover, units)
   };
 }
 
@@ -219,9 +219,10 @@ function radiansToDegrees(radians) {
   return (radians * 180) / Math.PI;
 }
 
-function buildVisualModel(visualWeather, sunLighting, season, temperature, cloudCover) {
+function buildVisualModel(visualWeather, sunLighting, season, temperature, cloudCover, units = "metric") {
   const condition = visualWeather.condition.toLowerCase();
   const scene = visualWeather.scene.toLowerCase();
+  const heatThreshold = units === "imperial" ? 86 : 30;
   const seasonal = {
     season: season.season,
     tone: season.tone,
@@ -285,7 +286,7 @@ function buildVisualModel(visualWeather, sunLighting, season, temperature, cloud
     };
   }
 
-  if (temperature >= 30) {
+  if (temperature >= heatThreshold) {
     return {
       mood: "heat",
       gradient: "heat",
@@ -330,6 +331,7 @@ module.exports = {
   getWeather,
   getWeatherByCity,
   getWeatherByCoords,
+  buildVisualModel,
   calculateSolarElevation,
   getLocalMonth,
   normalizeUnits
