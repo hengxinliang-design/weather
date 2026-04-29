@@ -219,7 +219,7 @@ function renderScene(scene) {
   elements.sceneImage.hidden = !scene.path;
   elements.sceneImage.src = scene.path || "";
   elements.sceneStatus.textContent = scene.path
-    ? `Generated isometric scene${scene.cached ? " / cached" : " / fresh"}`
+    ? `Generated isometric scene / ${scene.output.size}${scene.cached ? " / cached" : " / fresh"}`
     : scene.error || "Scene image is not available.";
 }
 

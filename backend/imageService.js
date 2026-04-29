@@ -1,10 +1,14 @@
 const crypto = require("crypto");
 const fs = require("fs/promises");
 const path = require("path");
+const sharp = require("sharp");
 
 const OPENAI_IMAGE_URL = "https://api.openai.com/v1/images/generations";
 const GENERATED_DIR = path.join(__dirname, "..", "public", "generated");
 const PUBLIC_GENERATED_PATH = "/generated";
+const OPENAI_ALLOWED_SIZES = new Set(["1024x1024", "1536x1024", "1024x1536", "auto"]);
+const DEFAULT_SOURCE_SIZE = "1536x1024";
+const DEFAULT_OUTPUT_SIZE = "3840x2160";
 
 function buildScenePrompt(weather, festival, prompt) {
   const location = [weather.city, weather.country].filter(Boolean).join(", ");
@@ -25,7 +29,8 @@ function buildScenePrompt(weather, festival, prompt) {
 
 async function getOrCreateScene(weather, festival, prompt) {
   const scenePrompt = buildScenePrompt(weather, festival, prompt);
-  const cacheKey = crypto.createHash("sha256").update(scenePrompt).digest("hex").slice(0, 24);
+  const imageConfig = getImageConfig();
+  const cacheKey = crypto.createHash("sha256").update(`${scenePrompt}|${JSON.stringify(imageConfig)}`).digest("hex").slice(0, 24);
   const filename = `${cacheKey}.png`;
   const filePath = path.join(GENERATED_DIR, filename);
   const publicPath = `${PUBLIC_GENERATED_PATH}/${filename}`;
@@ -36,7 +41,8 @@ async function getOrCreateScene(weather, festival, prompt) {
     return {
       cached: true,
       path: publicPath,
-      prompt: scenePrompt
+      prompt: scenePrompt,
+      ...imageConfig
     };
   }
 
@@ -45,32 +51,35 @@ async function getOrCreateScene(weather, festival, prompt) {
       cached: false,
       path: "",
       prompt: scenePrompt,
+      ...imageConfig,
       error: "Missing OPENAI_API_KEY. Add it to .env to enable automatic scene generation."
     };
   }
 
   let imageBase64;
   try {
-    imageBase64 = await generateOpenAIImage(scenePrompt);
+    imageBase64 = await generateOpenAIImage(scenePrompt, imageConfig);
   } catch (error) {
     return {
       cached: false,
       path: "",
       prompt: scenePrompt,
+      ...imageConfig,
       error: error.message || "OpenAI image generation failed."
     };
   }
 
-  await fs.writeFile(filePath, Buffer.from(imageBase64, "base64"));
+  await writeUpscaledImage(Buffer.from(imageBase64, "base64"), filePath, imageConfig.output);
 
   return {
     cached: false,
     path: publicPath,
-    prompt: scenePrompt
+    prompt: scenePrompt,
+    ...imageConfig
   };
 }
 
-async function generateOpenAIImage(prompt) {
+async function generateOpenAIImage(prompt, imageConfig = getImageConfig()) {
   const response = await fetch(OPENAI_IMAGE_URL, {
     method: "POST",
     headers: {
@@ -78,10 +87,10 @@ async function generateOpenAIImage(prompt) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
+      model: imageConfig.model,
       prompt,
-      size: process.env.OPENAI_IMAGE_SIZE || "1024x1024",
-      quality: process.env.OPENAI_IMAGE_QUALITY || "low",
+      size: imageConfig.source.size,
+      quality: imageConfig.quality,
       n: 1
     })
   });
@@ -103,6 +112,54 @@ async function generateOpenAIImage(prompt) {
   return image.b64_json;
 }
 
+function getImageConfig() {
+  const requestedSourceSize = process.env.OPENAI_IMAGE_SIZE || DEFAULT_SOURCE_SIZE;
+  const sourceSize = OPENAI_ALLOWED_SIZES.has(requestedSourceSize) ? requestedSourceSize : DEFAULT_SOURCE_SIZE;
+  const outputSize = parseSize(process.env.SCENE_OUTPUT_SIZE || DEFAULT_OUTPUT_SIZE, DEFAULT_OUTPUT_SIZE);
+
+  return {
+    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
+    quality: process.env.OPENAI_IMAGE_QUALITY || "high",
+    source: {
+      size: sourceSize,
+      native4k: false
+    },
+    output: {
+      width: outputSize.width,
+      height: outputSize.height,
+      size: `${outputSize.width}x${outputSize.height}`,
+      format: "png",
+      resize: "cover"
+    }
+  };
+}
+
+function parseSize(value, fallback) {
+  const match = /^(\d{3,5})x(\d{3,5})$/.exec(value || "");
+  if (!match) {
+    return parseSize(fallback);
+  }
+
+  return {
+    width: Number(match[1]),
+    height: Number(match[2])
+  };
+}
+
+async function writeUpscaledImage(inputBuffer, filePath, output) {
+  await sharp(inputBuffer)
+    .resize(output.width, output.height, {
+      fit: output.resize,
+      position: "center",
+      kernel: sharp.kernel.lanczos3
+    })
+    .png({
+      compressionLevel: 8,
+      adaptiveFiltering: true
+    })
+    .toFile(filePath);
+}
+
 async function fileExists(filePath) {
   try {
     await fs.access(filePath);
@@ -113,5 +170,10 @@ async function fileExists(filePath) {
 }
 
 module.exports = {
-  getOrCreateScene
+  buildScenePrompt,
+  generateOpenAIImage,
+  getImageConfig,
+  getOrCreateScene,
+  parseSize,
+  writeUpscaledImage
 };

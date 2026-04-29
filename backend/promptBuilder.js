@@ -1,20 +1,43 @@
-function buildWeatherPrompt(weather, festival, units) {
-  const tempUnit = units === "imperial" ? "degrees Fahrenheit" : "degrees Celsius";
-  const speedUnit = units === "imperial" ? "mph" : "m/s";
-  const location = [weather.city, weather.country].filter(Boolean).join(", ");
+function buildPrompt({ city, weather, festival }) {
+  return {
+    summary: `${city} ${weather.condition} ${weather.temp || weather.temperature}°`,
+    details: `${weather.scene || weather.description}, ${weather.sunLighting}`,
+    visualPrompt: `
+45° isometric miniature city scene
+
+City: ${city}
+
+Weather: ${weather.condition}
+
+Scene: ${weather.scene || weather.description}
+
+Lighting: ${weather.sunLighting}
+
+Weather lighting: ${weather.weatherLighting}
+
+Festival overlay: ${festival || "none"}
+
+PBR materials
+global illumination
+cinematic atmosphere
+`.trim()
+  };
+}
+
+function buildWeatherPrompt(weather, festival) {
+  const city = [weather.city, weather.country].filter(Boolean).join(", ");
+  const prompt = buildPrompt({
+    city,
+    weather,
+    festival: festival && festival.active ? festival.name : ""
+  });
 
   return {
-    summary: `${location} is ${weather.temperature} ${tempUnit} with ${weather.description || weather.condition}.`,
-    details: `Feels like ${weather.feelsLike} ${tempUnit}, humidity ${weather.humidity}%, wind ${weather.windSpeed} ${speedUnit}.`,
-    visualPrompt: [
-      `Create a ${weather.visual.mood} weather card for ${location}.`,
-      `Use ${weather.visual.gradient} atmosphere, ${weather.visual.motion} motion, and accent color ${weather.visual.accent}.`,
-      festival && festival.active ? `Blend in ${festival.name} using a ${festival.motif} overlay.` : "Keep overlays subtle."
-    ].join(" "),
+    ...prompt,
     displayLine: [
       `${weather.condition} visual engine`,
       festival && festival.active ? festival.name : "",
-      `${weather.localTime} local`
+      weather.localTime ? `${weather.localTime} local` : ""
     ]
       .filter(Boolean)
       .join(" / ")
@@ -22,5 +45,6 @@ function buildWeatherPrompt(weather, festival, units) {
 }
 
 module.exports = {
+  buildPrompt,
   buildWeatherPrompt
 };

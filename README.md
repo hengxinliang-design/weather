@@ -53,8 +53,9 @@ cp .env.example .env
 OPENWEATHER_API_KEY=your_openweathermap_api_key
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_IMAGE_MODEL=gpt-image-1
-OPENAI_IMAGE_SIZE=1024x1024
-OPENAI_IMAGE_QUALITY=low
+OPENAI_IMAGE_SIZE=1536x1024
+OPENAI_IMAGE_QUALITY=high
+SCENE_OUTPUT_SIZE=3840x2160
 PORT=3000
 ```
 
@@ -99,10 +100,23 @@ When `/api/weather` succeeds, the backend builds an isometric scene prompt from 
 
 1. Hashes the prompt to create a stable cache key.
 2. Checks `public/generated/` for a cached PNG.
-3. Generates a new image through OpenAI only on cache miss.
-4. Returns the local image path for the homepage to render.
+3. Generates a new high-quality source image through OpenAI only on cache miss.
+4. Resizes the source image locally to the configured scene output size.
+5. Returns the local image path for the homepage to render.
 
 Generated images are local runtime artifacts and are ignored by git.
+
+OpenAI image generation does not currently produce native `3840x2160` output from the Image API. The app defaults to a high-quality `1536x1024` source image and writes a local `3840x2160` PNG cache using Lanczos resizing through `sharp`.
+
+## Tests
+
+Run the local test suite:
+
+```bash
+npm test
+```
+
+The tests cover festival overlays, structured prompt generation, image-generation configuration, and local 4K image output dimensions.
 
 ## Environment
 
@@ -112,7 +126,8 @@ See `.env.example`:
 OPENWEATHER_API_KEY=your_openweathermap_api_key
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_IMAGE_MODEL=gpt-image-1
-OPENAI_IMAGE_SIZE=1024x1024
-OPENAI_IMAGE_QUALITY=low
+OPENAI_IMAGE_SIZE=1536x1024
+OPENAI_IMAGE_QUALITY=high
+SCENE_OUTPUT_SIZE=3840x2160
 PORT=3000
 ```
