@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>H5 Weather</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="weather-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Live OpenWeatherMap</p>
+            <h1>H5 Weather</h1>
+          </div>
+          <button class="icon-button" id="geoButton" type="button" title="Use current location" aria-label="Use current location">
+            <span aria-hidden="true">⌖</span>
+          </button>
+        </header>
+
+        <form class="search-row" id="weatherForm">
+          <label class="field">
+            <span>City</span>
+            <input id="cityInput" name="city" type="search" placeholder="Detroit" autocomplete="address-level2" />
+          </label>
+          <button type="submit">Search</button>
+        </form>
+
+        <div class="unit-toggle" role="group" aria-label="Temperature unit">
+          <button class="active" id="metricButton" type="button" data-unit="metric">°C</button>
+          <button id="imperialButton" type="button" data-unit="imperial">°F</button>
+        </div>
+
+        <section class="festival hidden" id="festivalCard">
+          <p id="festivalName"></p>
+          <h2 id="festivalHeadline"></h2>
+          <span id="festivalMessage"></span>
+        </section>
+
+        <section class="weather-card" id="weatherCard" aria-live="polite">
+          <div class="empty-state" id="emptyState">
+            <p>Search a city or use your location.</p>
+          </div>
+          <div class="weather-content hidden" id="weatherContent">
+            <div class="weather-main">
+              <div>
+                <p class="location" id="locationText"></p>
+                <p class="condition" id="conditionText"></p>
+              </div>
+              <img id="weatherIcon" alt="" />
+            </div>
+            <div class="temperature">
+              <span id="temperatureText"></span>
+              <small id="feelsLikeText"></small>
+            </div>
+            <div class="stats-grid">
+              <div>
+                <span>Humidity</span>
+                <strong id="humidityText"></strong>
+              </div>
+              <div>
+                <span>Wind</span>
+                <strong id="windText"></strong>
+              </div>
+              <div>
+                <span>Range</span>
+                <strong id="rangeText"></strong>
+              </div>
+              <div>
+                <span>Pressure</span>
+                <strong id="pressureText"></strong>
+              </div>
+            </div>
+            <p class="prompt" id="promptText"></p>
+          </div>
+        </section>
+
+        <p class="status" id="statusText"></p>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
