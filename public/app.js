@@ -228,12 +228,14 @@ function renderScene(scene) {
     elements.sceneImage.hidden = true;
     elements.sceneImage.src = "";
     elements.keywordScene.classList.remove("hidden");
-    elements.sceneStatus.textContent = "Image generation paused / weather keywords shown instantly";
+    elements.keywordHighlights.classList.add("hidden");
+    elements.sceneStatus.textContent = "";
     return;
   }
 
   elements.sceneCard.classList.remove("keyword-mode");
   elements.keywordScene.classList.add("hidden");
+  elements.keywordHighlights.classList.remove("hidden");
   elements.sceneImage.hidden = !scene.path;
   elements.sceneImage.src = scene.path || "";
   elements.sceneStatus.textContent = scene.path
@@ -248,9 +250,15 @@ function renderKeywordScene(keywordScene) {
   elements.keywordList.innerHTML = "";
   elements.keywordHighlights.innerHTML = "";
 
-  keywordScene.keywords.forEach((keyword) => {
-    const item = document.createElement("span");
-    item.textContent = keyword;
+  keywordScene.keywords.slice(0, 4).forEach((keyword) => {
+    const item = document.createElement("article");
+    const en = document.createElement("strong");
+    const zh = document.createElement("span");
+    const description = document.createElement("small");
+    en.textContent = keyword.en || keyword;
+    zh.textContent = keyword.zh || "";
+    description.textContent = keyword.description || "";
+    item.append(en, zh, description);
     elements.keywordList.append(item);
   });
 

@@ -97,9 +97,13 @@ test("builds keyword scene fallback from weather context", () => {
   );
 
   assert.equal(keywordScene.title, "Detroit, US weather profile");
-  assert.ok(keywordScene.keywords.includes("Detroit, US"));
-  assert.ok(keywordScene.keywords.includes("Rain"));
-  assert.ok(keywordScene.keywords.includes("Spring Mode"));
+  assert.equal(keywordScene.keywords.length, 4);
+  assert.deepEqual(Object.keys(keywordScene.keywords[0]), ["en", "zh", "description"]);
+  assert.equal(keywordScene.keywords[0].en, "Rain");
+  assert.equal(keywordScene.keywords[0].zh, "降雨");
+  assert.equal(keywordScene.keywords[2].en, "Spring Mode");
+  assert.equal(keywordScene.keywords[2].zh, "春日模式");
+  assert.match(keywordScene.keywords[3].description, /Humidity is 77%/);
   assert.equal(keywordScene.highlights[0].label, "Mood");
   assert.equal(keywordScene.highlights[0].value, "rain");
 });

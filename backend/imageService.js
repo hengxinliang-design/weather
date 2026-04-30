@@ -131,19 +131,28 @@ function isBillingLimitError(error) {
 
 function buildKeywordScene(weather, festival) {
   const location = [weather.city, weather.country].filter(Boolean).join(", ");
-  const season = weather.season ? weather.season.season : "";
-  const tone = weather.visual && weather.visual.tone ? weather.visual.tone : weather.season && weather.season.tone;
   const keywords = [
-    location,
-    weather.condition,
-    weather.scene || weather.description,
-    weather.sunPhase,
-    season,
-    tone,
-    `${weather.temperature}${weather.units === "imperial" ? "F" : "C"}`,
-    `${weather.humidity}% humidity`,
-    `${weather.cloudCover}% cloud cover`
-  ].filter(Boolean);
+    {
+      en: weather.condition,
+      zh: translateWeatherCondition(weather.condition),
+      description: `Today's sky in ${location || "this city"} is ${String(weather.scene || weather.description || weather.condition).toLowerCase()}.`
+    },
+    {
+      en: weather.sunPhase || "Local light",
+      zh: translateSunPhase(weather.sunPhase),
+      description: `The light feels ${String(weather.sunLighting || "soft and local").toLowerCase()}.`
+    },
+    {
+      en: weather.season ? weather.season.season : "Season",
+      zh: translateSeason(weather.season ? weather.season.season : ""),
+      description: `The seasonal tone is ${String((weather.visual && weather.visual.tone) || (weather.season && weather.season.tone) || "balanced").toLowerCase()}.`
+    },
+    {
+      en: "Humidity",
+      zh: "湿度",
+      description: `Humidity is ${weather.humidity}% with ${weather.cloudCover}% cloud cover.`
+    }
+  ];
   const highlights = [
     { label: "Mood", value: weather.visual ? weather.visual.mood : weather.condition },
     { label: "Light", value: weather.sunLighting },
@@ -152,7 +161,11 @@ function buildKeywordScene(weather, festival) {
   ];
 
   if (festival && festival.active) {
-    keywords.push(festival.name, `${festival.motif} motif`);
+    keywords[2] = {
+      en: festival.name,
+      zh: translateFestival(festival.name),
+      description: `A subtle ${festival.motif} motif matches the city weather.`
+    };
   }
 
   return {
@@ -163,6 +176,50 @@ function buildKeywordScene(weather, festival) {
     highlights,
     palette: weather.visual && weather.visual.palette ? weather.visual.palette : []
   };
+}
+
+function translateWeatherCondition(condition = "") {
+  const normalized = condition.toLowerCase();
+  if (normalized.includes("thunder")) return "雷暴";
+  if (normalized.includes("rain")) return "降雨";
+  if (normalized.includes("snow")) return "降雪";
+  if (normalized.includes("fog")) return "雾";
+  if (normalized.includes("cloud") || normalized.includes("overcast")) return "多云";
+  if (normalized.includes("clear")) return "晴朗";
+  return "天气";
+}
+
+function translateSunPhase(phase = "") {
+  const normalized = phase.toLowerCase();
+  if (normalized.includes("night")) return "夜间光线";
+  if (normalized.includes("sunrise")) return "日出光线";
+  if (normalized.includes("sunset")) return "日落光线";
+  if (normalized.includes("morning")) return "晨间光线";
+  if (normalized.includes("afternoon")) return "午后光线";
+  if (normalized.includes("midday")) return "正午光线";
+  return "本地光线";
+}
+
+function translateSeason(season = "") {
+  const normalized = season.toLowerCase();
+  if (normalized.includes("spring")) return "春季";
+  if (normalized.includes("summer")) return "夏季";
+  if (normalized.includes("autumn") || normalized.includes("fall")) return "秋季";
+  if (normalized.includes("winter")) return "冬季";
+  return "季节";
+}
+
+function translateFestival(name = "") {
+  const normalized = name.toLowerCase();
+  if (normalized.includes("spring")) return "春日模式";
+  if (normalized.includes("summer")) return "夏日模式";
+  if (normalized.includes("autumn")) return "秋日模式";
+  if (normalized.includes("winter")) return "冬日模式";
+  if (normalized.includes("christmas")) return "圣诞节";
+  if (normalized.includes("new year")) return "新年";
+  if (normalized.includes("valentine")) return "情人节";
+  if (normalized.includes("halloween")) return "万圣节";
+  return "节日";
 }
 
 function getImageConfig() {
