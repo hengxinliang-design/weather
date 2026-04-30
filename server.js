@@ -13,6 +13,14 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    openaiKeyConfigured: Boolean(process.env.OPENAI_API_KEY),
+    imageModel: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1"
+  });
+});
+
 app.get("/api/weather", async (req, res) => {
   try {
     const { city, lat, lon, units = "metric" } = req.query;
