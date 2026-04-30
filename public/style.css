@@ -297,6 +297,10 @@ h1 {
   object-fit: cover;
 }
 
+.scene-card img[hidden] {
+  display: none;
+}
+
 .scene-card.keyword-mode {
   min-height: 0;
   padding: 14px;
