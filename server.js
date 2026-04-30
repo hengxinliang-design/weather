@@ -17,6 +17,8 @@ app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
     openaiKeyConfigured: Boolean(process.env.OPENAI_API_KEY),
+    vercelEnv: process.env.VERCEL_ENV || "",
+    nodeEnv: process.env.NODE_ENV || "",
     imageModel: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1"
   });
 });
