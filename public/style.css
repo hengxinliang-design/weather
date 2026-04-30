@@ -297,6 +297,99 @@ h1 {
   object-fit: cover;
 }
 
+.scene-card.keyword-mode {
+  min-height: 320px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--dynamic-accent) 16%, white), rgba(255, 255, 255, 0.94)),
+    #f7fafb;
+}
+
+.keyword-scene {
+  min-height: 320px;
+  display: grid;
+  align-content: space-between;
+  gap: 22px;
+  padding: 24px;
+}
+
+.keyword-header {
+  display: grid;
+  gap: 8px;
+}
+
+.keyword-header span {
+  width: fit-content;
+  padding: 6px 9px;
+  border: 1px solid color-mix(in srgb, var(--dynamic-accent) 28%, white);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--dynamic-accent);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.keyword-header strong {
+  color: var(--ink);
+  font-size: clamp(28px, 5vw, 48px);
+  line-height: 1;
+  text-transform: capitalize;
+}
+
+.keyword-header small {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 750;
+  text-transform: capitalize;
+}
+
+.keyword-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.keyword-list span {
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #314151;
+  font-size: 13px;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.keyword-highlights {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.keyword-highlights div {
+  min-height: 78px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.keyword-highlights span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.keyword-highlights strong {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.25;
+  text-transform: capitalize;
+}
+
 .scene-card p {
   position: absolute;
   left: 12px;
@@ -496,6 +589,10 @@ h1 {
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .keyword-highlights {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 520px) {
@@ -514,6 +611,11 @@ h1 {
 
   .scene-card {
     min-height: 210px;
+  }
+
+  .keyword-scene {
+    min-height: 310px;
+    padding: 18px;
   }
 
   .search-row,

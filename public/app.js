@@ -18,6 +18,12 @@ const elements = {
   visualStage: document.querySelector("#visualStage"),
   sceneCard: document.querySelector("#sceneCard"),
   sceneImage: document.querySelector("#sceneImage"),
+  keywordScene: document.querySelector("#keywordScene"),
+  keywordBadge: document.querySelector("#keywordBadge"),
+  keywordTitle: document.querySelector("#keywordTitle"),
+  keywordSubtitle: document.querySelector("#keywordSubtitle"),
+  keywordList: document.querySelector("#keywordList"),
+  keywordHighlights: document.querySelector("#keywordHighlights"),
   sceneStatus: document.querySelector("#sceneStatus"),
   festivalCard: document.querySelector("#festivalCard"),
   festivalName: document.querySelector("#festivalName"),
@@ -216,11 +222,47 @@ function renderScene(scene) {
   }
 
   elements.sceneCard.classList.remove("hidden");
+  if (scene.type === "keywords" && scene.keywordScene) {
+    renderKeywordScene(scene.keywordScene);
+    elements.sceneCard.classList.add("keyword-mode");
+    elements.sceneImage.hidden = true;
+    elements.sceneImage.src = "";
+    elements.keywordScene.classList.remove("hidden");
+    elements.sceneStatus.textContent = "Image generation paused / weather keywords shown instantly";
+    return;
+  }
+
+  elements.sceneCard.classList.remove("keyword-mode");
+  elements.keywordScene.classList.add("hidden");
   elements.sceneImage.hidden = !scene.path;
   elements.sceneImage.src = scene.path || "";
   elements.sceneStatus.textContent = scene.path
     ? `Generated isometric scene / ${scene.output.size}${scene.cached ? " / cached" : " / fresh"}`
     : scene.error || "Scene image is not available.";
+}
+
+function renderKeywordScene(keywordScene) {
+  elements.keywordBadge.textContent = "Weather keywords";
+  elements.keywordTitle.textContent = keywordScene.title;
+  elements.keywordSubtitle.textContent = keywordScene.subtitle;
+  elements.keywordList.innerHTML = "";
+  elements.keywordHighlights.innerHTML = "";
+
+  keywordScene.keywords.forEach((keyword) => {
+    const item = document.createElement("span");
+    item.textContent = keyword;
+    elements.keywordList.append(item);
+  });
+
+  keywordScene.highlights.forEach((highlight) => {
+    const card = document.createElement("div");
+    const label = document.createElement("span");
+    const value = document.createElement("strong");
+    label.textContent = highlight.label;
+    value.textContent = highlight.value;
+    card.append(label, value);
+    elements.keywordHighlights.append(card);
+  });
 }
 
 function renderFestival(festival) {

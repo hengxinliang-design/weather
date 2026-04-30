@@ -58,6 +58,52 @@ test("writes generated image as requested 4K dimensions", async () => {
   assert.equal(metadata.height, 2160);
 });
 
+test("detects OpenAI billing hard limit errors", () => {
+  assert.equal(imageService.isBillingLimitError(new Error("Billing hard limit has been reached.")), true);
+  assert.equal(imageService.isBillingLimitError(new Error("OpenAI image generation failed.")), false);
+});
+
+test("builds keyword scene fallback from weather context", () => {
+  const keywordScene = imageService.buildKeywordScene(
+    {
+      city: "Detroit",
+      country: "US",
+      condition: "Rain",
+      scene: "light rain",
+      temperature: 58,
+      units: "imperial",
+      humidity: 77,
+      cloudCover: 92,
+      sunPhase: "afternoon",
+      sunLighting: "soft diffused daylight",
+      localTime: "14:20",
+      visual: {
+        mood: "rain",
+        motion: "fall",
+        accent: "#2563eb",
+        tone: "fresh green bloom",
+        palette: ["#2563eb"]
+      },
+      season: {
+        season: "spring",
+        tone: "fresh green bloom"
+      }
+    },
+    {
+      active: true,
+      name: "Spring Mode",
+      motif: "leaf"
+    }
+  );
+
+  assert.equal(keywordScene.title, "Detroit, US weather profile");
+  assert.ok(keywordScene.keywords.includes("Detroit, US"));
+  assert.ok(keywordScene.keywords.includes("Rain"));
+  assert.ok(keywordScene.keywords.includes("Spring Mode"));
+  assert.equal(keywordScene.highlights[0].label, "Mood");
+  assert.equal(keywordScene.highlights[0].value, "rain");
+});
+
 function snapshotEnv() {
   return {
     OPENAI_IMAGE_SIZE: process.env.OPENAI_IMAGE_SIZE,

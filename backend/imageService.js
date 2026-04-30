@@ -61,6 +61,18 @@ async function getOrCreateScene(weather, festival, prompt) {
   try {
     imageBase64 = await generateOpenAIImage(scenePrompt, imageConfig);
   } catch (error) {
+    if (isBillingLimitError(error)) {
+      return {
+        cached: false,
+        path: "",
+        prompt: scenePrompt,
+        type: "keywords",
+        fallbackReason: "billing_limit",
+        keywordScene: buildKeywordScene(weather, festival),
+        ...imageConfig
+      };
+    }
+
     return {
       cached: false,
       path: "",
@@ -111,6 +123,46 @@ async function generateOpenAIImage(prompt, imageConfig = getImageConfig()) {
   }
 
   return image.b64_json;
+}
+
+function isBillingLimitError(error) {
+  return /billing hard limit has been reached/i.test(error && error.message ? error.message : "");
+}
+
+function buildKeywordScene(weather, festival) {
+  const location = [weather.city, weather.country].filter(Boolean).join(", ");
+  const season = weather.season ? weather.season.season : "";
+  const tone = weather.visual && weather.visual.tone ? weather.visual.tone : weather.season && weather.season.tone;
+  const keywords = [
+    location,
+    weather.condition,
+    weather.scene || weather.description,
+    weather.sunPhase,
+    season,
+    tone,
+    `${weather.temperature}${weather.units === "imperial" ? "F" : "C"}`,
+    `${weather.humidity}% humidity`,
+    `${weather.cloudCover}% cloud cover`
+  ].filter(Boolean);
+  const highlights = [
+    { label: "Mood", value: weather.visual ? weather.visual.mood : weather.condition },
+    { label: "Light", value: weather.sunLighting },
+    { label: "Motion", value: weather.visual ? weather.visual.motion : "ambient" },
+    { label: "Local", value: weather.localTime ? `${weather.localTime} local` : weather.timezone || "local time" }
+  ];
+
+  if (festival && festival.active) {
+    keywords.push(festival.name, `${festival.motif} motif`);
+  }
+
+  return {
+    title: `${location || "City"} weather profile`,
+    subtitle: `${weather.condition} / ${weather.scene || weather.description}`,
+    accent: weather.visual ? weather.visual.accent : "#0f766e",
+    keywords,
+    highlights,
+    palette: weather.visual && weather.visual.palette ? weather.visual.palette : []
+  };
 }
 
 function getImageConfig() {
@@ -171,10 +223,12 @@ async function fileExists(filePath) {
 }
 
 module.exports = {
+  buildKeywordScene,
   buildScenePrompt,
   generateOpenAIImage,
   getImageConfig,
   getOrCreateScene,
+  isBillingLimitError,
   parseSize,
   writeUpscaledImage
 };
